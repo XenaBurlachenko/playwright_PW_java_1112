@@ -26,13 +26,10 @@ jobs:
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
         restore-keys: ${{ runner.os }}-m2
     
-    - name: Setup Playwright
-      uses: microsoft/playwright-github-action@v1
-      with:
-        browsers: 'chromium'
-    
     - name: Run tests
-      run: mvn test
+      run: |
+        # Установка зависимостей и запуск тестов
+        mvn clean compile test
     
     - name: Upload trace files
       uses: actions/upload-artifact@v4

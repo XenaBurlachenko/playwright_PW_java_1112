@@ -22,9 +22,11 @@ public class DynamicLoadingTest {
 
     @Test
     void testDynamicLoading() throws ExecutionException, InterruptedException {
-        // Создаем Playwright и браузер
+        // Создаем Playwright
         playwright = Playwright.create();
-        browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false));
+        
+        // Запускаем браузер
+        browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(true));
         context = browser.newContext();
         
         // Начинаем запись трассировки
@@ -41,8 +43,7 @@ public class DynamicLoadingTest {
         // Перехватываем сетевые запросы
         page.onResponse(response -> {
             String url = response.url();
-            // Проверяем различные возможные URL с dynamic_loading
-            if (url.contains("/dynamic_loading") || url.contains("dynamic_loading")) {
+            if (url.contains("dynamic_loading")) {
                 int status = response.status();
                 System.out.println("Запрос перехвачен: " + url + " - Статус: " + status);
                 
@@ -55,12 +56,12 @@ public class DynamicLoadingTest {
         // Открываем страницу
         page.navigate("https://the-internet.herokuapp.com/dynamic_loading/1");
         
-        // Нажимаем Start
+        // Нажимаем кнопку Start
         page.click("button");
         
-        // Ждём появлениe элемента
+        // Ждем появления текста "Hello World!"
         page.waitForSelector("#finish", new Page.WaitForSelectorOptions().setTimeout(10000));
-        
+
         // Получаем текст
         Locator finishText = page.locator("#finish");
         String actualText = finishText.textContent();
